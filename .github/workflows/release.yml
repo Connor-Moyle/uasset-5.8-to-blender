@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Blender extension zip
+        run: |
+          mkdir -p build/uasset_bridge
+          cp -r __init__.py bridge.py materials.py blender_manifest.toml README.md unreal_scripts build/uasset_bridge/
+          cd build && zip -r ../uasset_bridge.zip uasset_bridge
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: UAsset Bridge ${{ github.ref_name }}
+          body_path: .github/release-notes.md
+          files: uasset_bridge.zip
