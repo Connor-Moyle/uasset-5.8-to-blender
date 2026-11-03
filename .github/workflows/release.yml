@@ -3,6 +3,8 @@ name: Release
 on:
   push:
     tags: ["v*"]
+  release:
+    types: [published]
 
 permissions:
   contents: write
@@ -22,6 +24,8 @@ jobs:
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
-          name: UAsset Bridge ${{ github.ref_name }}
+          tag_name: ${{ github.event.release.tag_name || github.ref_name }}
+          name: UAsset Bridge ${{ github.event.release.tag_name || github.ref_name }}
           body_path: .github/release-notes.md
           files: uasset_bridge.zip
+          overwrite_files: true
